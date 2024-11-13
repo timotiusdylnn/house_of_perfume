@@ -8,3 +8,7 @@ Route::get('/', function () {
 });
 
 Route::get('/details', [ProductController::class, 'detail'])->name('productdesc');
+
+Route::get('/profile', function () {
+    return view('profile');
+});
