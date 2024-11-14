@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="dark:bg-gray-800 border-b border-gray-800 sticky top-0 z-50 transition-all duration-300 ease-in-out">
+<nav x-data="{ open: false }" class="dark:bg-gray-800 border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -12,7 +12,13 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" class="text-white hover:text-gray-700 focus:outline-none focus:ring-0" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('dashboard')" class="text-white hover:text-gray-700" :active="request()->routeIs('dashboard')">
+                        {{ __('Home') }}
+                    </x-nav-link>
+                </div>
+
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('dashboard')" class="text-white hover:text-gray-700" :active="request()->routeIs('dashboard')">
                         {{ __('Home') }}
                     </x-nav-link>
                 </div>
@@ -34,10 +40,6 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -78,11 +80,6 @@
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
 
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
