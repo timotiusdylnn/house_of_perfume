@@ -36,6 +36,15 @@
             </header>
             
             <div class="bg-white rounded-md mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8 mt-6">
+                
+                <!-- Add Product Button -->
+                <div class="flex justify-end mb-4">
+                    <a href="{{ url('add_product') }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300">
+                        Add Product
+                    </a>
+                </div>
+
+                <!-- Product Table -->
                 <table class="min-w-full table-auto">
                     <thead>
                         <tr class="bg-gray-100">

@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="dark:bg-gray-800 border-b border-gray-100">
+<nav x-data="{ open: false }" class="dark:bg-gray-800 border-b border-gray-100 sticky top-0 z-50 transition-all duration-300 ease-in-out">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -12,14 +12,8 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" class="text-white hover:text-gray-700" :active="request()->routeIs('dashboard')">
-                        {{ __('Home') }}
-                    </x-nav-link>
-                </div>
-
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" class="text-white hover:text-gray-700" :active="request()->routeIs('dashboard')">
-                        {{ __('Home') }}
+                    <x-nav-link href="{{ route('admin.dashboard') }}" class="text-white hover:text-gray-700" :active="request()->routeIs('admin.dashboard')">
+                        {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
             </div>
