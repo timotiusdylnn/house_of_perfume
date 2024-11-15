@@ -9,6 +9,56 @@
         </p>
     </header>
 
+    <form action="{{ route('profile.update-photo') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        <div class="mb-4">
+            <label for="profile_photo" class="block text-sm font-medium text-gray-700">Profile Photo</label>
+
+            <div class="flex items-center mt-2">
+                @if (Auth::user()->profile_photo_path)
+                    <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" 
+                         alt="Profile Photo" 
+                         class="w-16 h-16 rounded-full">
+                @else
+                    <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                        <span class="text-gray-500">N/A</span>
+                    </div>
+                @endif
+
+                <input type="file" name="profile_photo" id="profile_photo" class="ml-4">
+            </div>
+        </div>
+
+        <div class="mt-4 flex space-x-2">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Upload</button>
+
+            @if (Auth::user()->profile_photo_path)
+                <!-- Remove photo button should call a separate route to handle photo removal -->
+                <button type="button" onclick="confirmRemovePhoto()" 
+                        class="px-4 py-2 bg-red-600 text-white rounded-md">
+                    Remove Photo
+                </button>
+            @endif
+        </div>
+    </form>
+
+    <form id="remove-photo-form" action="{{ route('profile.remove-photo') }}" method="POST" class="hidden">
+        @csrf
+        @method('DELETE')
+    </form>
+
+    <script>
+        // Function to confirm and submit the removal of the profile photo
+        function confirmRemovePhoto() {
+            if (confirm('Are you sure you want to remove your profile photo?')) {
+                // Submit the hidden form for removing the photo
+                document.getElementById('remove-photo-form').submit();
+            }
+        }
+    </script>
+
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>

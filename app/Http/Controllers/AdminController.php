@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
+use function PHPUnit\Framework\fileExists;
 
 class AdminController extends Controller
 {
@@ -26,6 +27,8 @@ class AdminController extends Controller
         ], [
             'image.required' => 'Please upload a product image. This field is required.',
         ]);
+
+        $sanitizedDescription = strip_tags($request->input('description'), '<p><strong><br>');
 
         $product = new Product();
 
@@ -53,16 +56,13 @@ class AdminController extends Controller
         if ($search) {
             $product = Product::where('Name', 'like', '%' . $search . '%')->get();
         } else {
-            // Return all products if no search term is provided
             $product = Product::all();
         }
 
         if ($request->ajax()) {
-            // Return only the table rows as HTML for AJAX requests
             return view('admin.product_table', compact('product'));
         }
 
-        // Return the whole page view for non-AJAX requests
         return view('admin.index', compact('product'));
     }
 
@@ -81,13 +81,13 @@ class AdminController extends Controller
             'description' => 'nullable|string',
             'notes_description' => 'nullable|string',
             'ingredients' => 'nullable|string',
-            'image' => 'nullable|mimes:jpeg,png,jpg,gif|file|max:2048', // Image is optional for update
+            'image' => 'nullable|mimes:jpeg,png,jpg,gif|file|max:2048',
         ]);
 
-        // Find the product by ID
+        $sanitizedDescription = strip_tags($request->input('description'), '<p><strong><br>');
+
         $product = Product::findOrFail($id);
 
-        // Update the product fields
         $product->Name = $request->name;
         $product->Brand = $request->brand;
         $product->Price = $request->price;
@@ -95,19 +95,15 @@ class AdminController extends Controller
         $product->Notes_Description = $request->notes_description;
         $product->Ingredients = $request->ingredients;
 
-        // Handle image upload if a new image is provided
         if ($request->hasFile('image')) {
-            // If there's an old image, delete it from storage
             if ($product->Image) {
                 \Storage::delete('public/' . $product->Image);
             }
 
-            // Upload the new image
             $imagePath = $request->file('image')->store('products', 'public');
             $product->Image = $imagePath;
         }
 
-        // Save the updated product
         $product->save();
 
         return redirect()->route('admin.dashboard')->with('success', 'Product updated successfully.');
@@ -115,17 +111,30 @@ class AdminController extends Controller
 
     public function delete_product($id)
     {
-        // Find the product by ID
         $product = Product::find($id);
 
-        if ($product) {
-            // Delete the product
-            $product->delete();
+        $imagePath = public_path('storage/products'. $product->Image);
 
-            // Redirect with a success message
+        if(fileExists($imagePath)){
+            unlink($imagePath);
+        }
+
+        $product->delete();
+
+        if ($product) {
+            // Delete the image file if it exists
+            if ($product->Image) {
+                $imagePath = public_path('storage/' . $product->Image);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath); // Delete the image file
+                }
+            }
+    
+            // Delete the product record from the database
+            $product->delete();
+    
             return redirect()->route('admin.dashboard')->with('success', 'Product deleted successfully!');
         } else {
-            // If the product isn't found, return an error message
             return redirect()->route('admin.dashboard')->with('error', 'Product not found!');
         }
     }

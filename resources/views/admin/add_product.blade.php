@@ -43,6 +43,64 @@
             // Hide the delete button
             document.getElementById('delete-btn-container').classList.add('hidden');
         }
+
+        function addSizeField() {
+            const sizeFieldsContainer = document.getElementById('size-fields-container');
+
+            // Create a new div element to hold the new size and price inputs
+            const newGroup = document.createElement('div');
+            newGroup.classList.add('size-price-group', 'mb-4');
+
+            // Size input field
+            const sizeLabel = document.createElement('label');
+            sizeLabel.classList.add('block', 'text-sm', 'font-medium', 'text-gray-700');
+            sizeLabel.setAttribute('for', 'size');
+            sizeLabel.innerText = 'Size (ml)';
+            const sizeInput = document.createElement('input');
+            sizeInput.setAttribute('type', 'number');
+            sizeInput.setAttribute('name', 'sizes[]');
+            sizeInput.classList.add('size-input', 'mt-1', 'block', 'w-full', 'border-gray-300', 'rounded-md', 'shadow-sm', 'focus:border-blue-500', 'focus:ring-blue-500');
+            sizeInput.setAttribute('placeholder', 'Enter size in ml');
+            sizeInput.setAttribute('min', '1');
+            
+            // Price input field
+            const priceLabel = document.createElement('label');
+            priceLabel.classList.add('block', 'text-sm', 'font-medium', 'text-gray-700', 'mt-2');
+            priceLabel.setAttribute('for', 'price');
+            priceLabel.innerText = 'Price';
+            const priceInput = document.createElement('input');
+            priceInput.setAttribute('type', 'text');
+            priceInput.setAttribute('name', 'prices[]');
+            priceInput.classList.add('price-input', 'mt-1', 'block', 'w-full', 'border-gray-300', 'rounded-md', 'shadow-sm', 'focus:border-blue-500', 'focus:ring-blue-500');
+            priceInput.setAttribute('placeholder', 'Enter price');
+            
+            // Append the size, price fields to the new group
+            newGroup.appendChild(sizeLabel);
+            newGroup.appendChild(sizeInput);
+            newGroup.appendChild(priceLabel);
+            newGroup.appendChild(priceInput);
+
+            // Append the new group to the container
+            sizeFieldsContainer.appendChild(newGroup);
+
+            // Show the "Delete Last Size" button when new size is added
+            document.getElementById('delete-size-btn').classList.remove('hidden');
+        }
+
+        function deleteLastSize() {
+            const sizeFieldsContainer = document.getElementById('size-fields-container');
+            const sizePriceGroups = sizeFieldsContainer.getElementsByClassName('size-price-group');
+
+            // Only delete if there is more than one size-price group
+            if (sizePriceGroups.length > 1) {
+                sizeFieldsContainer.removeChild(sizePriceGroups[sizePriceGroups.length - 1]);
+            }
+
+            // Hide the "Delete Last Size" button if there's only one size field left
+            if (sizePriceGroups.length <= 1) {
+                document.getElementById('delete-size-btn').classList.add('hidden');
+            }
+        }
     </script>    
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -112,10 +170,10 @@
                     <input type="text" name="brand" id="brand" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Enter brand name">
                 </div>
         
-                <!-- Price -->
+                <!-- Price Input -->
                 <div class="mb-4">
                     <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
-                    <input type="text" name="price" id="price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Enter price">
+                    <input type="text" name="price" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Enter price" required>
                 </div>
         
                 <!-- Description -->
