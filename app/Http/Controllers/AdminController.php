@@ -111,28 +111,20 @@ class AdminController extends Controller
 
     public function delete_product($id)
     {
-        $product = Product::find($id);
-
-        $imagePath = public_path('storage/products'. $product->Image);
-
-        if(fileExists($imagePath)){
-            unlink($imagePath);
-        }
-
-        $product->delete();
+        $product = Product::find($id); // Retrieve the product by ID
 
         if ($product) {
             // Delete the image file if it exists
-            if ($product->Image) {
+            if (!empty($product->Image)) {
                 $imagePath = public_path('storage/' . $product->Image);
                 if (file_exists($imagePath)) {
                     unlink($imagePath); // Delete the image file
                 }
             }
-    
+
             // Delete the product record from the database
             $product->delete();
-    
+
             return redirect()->route('admin.dashboard')->with('success', 'Product deleted successfully!');
         } else {
             return redirect()->route('admin.dashboard')->with('error', 'Product not found!');
