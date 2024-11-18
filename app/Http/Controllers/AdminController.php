@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-
-use function PHPUnit\Framework\fileExists;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -31,17 +30,15 @@ class AdminController extends Controller
         $sanitizedDescription = strip_tags($request->input('description'), '<p><strong><br>');
 
         $product = new Product();
-
         $product->Name = $request->name;
         $product->Brand = $request->brand;
         $product->Price = $request->price;
-        $product->Description = $request->description;
+        $product->Description = $sanitizedDescription;
         $product->Notes_Description = $request->notes_description;
         $product->Ingredients = $request->ingredients;
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
-            $product->Image = $imagePath;
+            $product->Image = $request->file('image')->store('products', 'public');
         }
 
         $product->save();
@@ -52,12 +49,9 @@ class AdminController extends Controller
     public function view_product(Request $request)
     {
         $search = $request->input('search');
-        
-        if ($search) {
-            $product = Product::where('Name', 'like', '%' . $search . '%')->get();
-        } else {
-            $product = Product::all();
-        }
+        $product = $search
+            ? Product::where('Name', 'like', '%' . $search . '%')->get()
+            : Product::all();
 
         if ($request->ajax()) {
             return view('admin.product_table', compact('product'));
@@ -87,21 +81,16 @@ class AdminController extends Controller
         $sanitizedDescription = strip_tags($request->input('description'), '<p><strong><br>');
 
         $product = Product::findOrFail($id);
-
         $product->Name = $request->name;
         $product->Brand = $request->brand;
         $product->Price = $request->price;
-        $product->Description = $request->description;
+        $product->Description = $sanitizedDescription;
         $product->Notes_Description = $request->notes_description;
         $product->Ingredients = $request->ingredients;
 
         if ($request->hasFile('image')) {
-            if ($product->Image) {
-                \Storage::delete('public/' . $product->Image);
-            }
-
-            $imagePath = $request->file('image')->store('products', 'public');
-            $product->Image = $imagePath;
+            Storage::delete('public/' . $product->Image);
+            $product->Image = $request->file('image')->store('products', 'public');
         }
 
         $product->save();
@@ -111,23 +100,14 @@ class AdminController extends Controller
 
     public function delete_product($id)
     {
-        $product = Product::find($id); // Retrieve the product by ID
+        $product = Product::findOrFail($id);
 
-        if ($product) {
-            // Delete the image file if it exists
-            if (!empty($product->Image)) {
-                $imagePath = public_path('storage/' . $product->Image);
-                if (file_exists($imagePath)) {
-                    unlink($imagePath); // Delete the image file
-                }
-            }
-
-            // Delete the product record from the database
-            $product->delete();
-
-            return redirect()->route('admin.dashboard')->with('success', 'Product deleted successfully!');
-        } else {
-            return redirect()->route('admin.dashboard')->with('error', 'Product not found!');
+        if (!empty($product->Image)) {
+            Storage::delete('public/' . $product->Image);
         }
+
+        $product->delete();
+
+        return redirect()->route('admin.dashboard')->with('success', 'Product deleted successfully!');
     }
 }
